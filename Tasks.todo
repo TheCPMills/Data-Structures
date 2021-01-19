@@ -1,0 +1,45 @@
+Data Structures:
+    - Linear
+        - Array @done
+        - List @done
+        - SinglyLinkedList @done
+            - Queue @done
+            - Stack @done
+        - LinkedList @done
+            - DoubleEndedList @done
+        - CircularArray @done
+        - CircularList @done
+        - Set @done
+        - Multiset @done
+        
+    - Associative
+        - HashMap
+        - MultiHashMap
+
+    - Tree
+        - GeneralTree
+            - NAryTree
+                - BinarySearchTree
+                    - AVLTree
+                    - DoublyChainedTree
+        - MinHeap
+        - MaxHeap
+        - FenwickTree
+
+    - Graph
+        - SimpleGraph
+        - WeightedGraph
+        - WeightedMultigraph
+        - WeightedLoopGraph
+        - WeightedPseudograph
+        - Multigraph
+        - Pseudograph
+        - LoopGraph
+        - DirectedGraph
+        - DirectedWeightedGraph
+        - DirectedWeightedMultigraph
+        - DirectedWeightedLoopGraph
+        - DirectedWeightedPseudograph
+        - DirectedMultigraph
+        - DirectedPseudograph
+        - DirectedLoopGraph
