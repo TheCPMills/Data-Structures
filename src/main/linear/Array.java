@@ -2,6 +2,8 @@ package main.linear;
 
 import main.*;
 import main.util.*;
+import main.util.Cloneable;
+
 import java.util.*;
 import java.util.function.*;
 
@@ -27,7 +29,7 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
         }
     }
 
-    public Array(Structure c) {
+    public Array(LinearStructure<E> c) {
         this(c.size());
         addAll(c);
     }
@@ -44,8 +46,7 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         if (capacity - size < c.size()) {
             return false;
         }
@@ -63,14 +64,12 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public Object clone() {
-        Array<?> v = (Array<?>) super.clone();
-        v.elementData = main.Arrays.copyOf(elementData, size);
-        return v;
+    public Array<E> clone() {
+        return new Array<>(this);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public int compare(Structure o1, Structure o2) {
         if (o1.getClass() != o2.getClass()) {
             throw new IllegalArgumentException(o1.getClass() + " cannot be compared to " + o2.getClass());
@@ -81,12 +80,10 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
             int o1Size = o1.size();
             int o2Size = o2.size();
 
-            Class<?> o1ParamClass = null;
-            Class<?> o2ParamClass = null;
+            Class<?> o1ParamClass = (o1Size > 0) ? ((Array<E>) (o1)).getIf(x -> x != null).arrayify()[0].getClass() : null;
+            Class<?> o2ParamClass = (o2Size > 0) ? ((Array<E>) (o2)).getIf(x -> x != null).arrayify()[0].getClass() : null;
 
             if (o1Size != 0 && o2Size != 0) {
-                o1ParamClass = ((LinearStructure<E>) (o1)).getIf(x -> x != null).arrayify()[0].getClass();
-                o2ParamClass = ((LinearStructure<E>) (o2)).getIf(x -> x != null).arrayify()[0].getClass();
                 if (o1ParamClass != o2ParamClass) {
                     throw new IllegalArgumentException(o1ParamClass + " cannot be compared to " + o2ParamClass);
                 }
@@ -99,7 +96,11 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
                 try {
                     obj = (Comparator<Object>) o1ParamClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    obj = (Comparator<Object>) ((Structure) (o1)).clone();
+                    if (Utilities.isRelatedTo(o1ParamClass, Cloneable.class)) {
+                        obj = (Comparator<Object>) ((Cloneable) (((LinearStructure<E>) (o1)).getIf(x -> x != null).arrayify()[0])).clone();
+                    } else {
+                        obj = (Comparator<Object>) ((LinearStructure<E>) (o1)).getIf(x -> x != null).arrayify()[0];
+                    }
                 }
 
                 int result;
@@ -187,7 +188,7 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean removeAll(Structure c) {
+    public boolean removeAll(LinearStructure<E> c) {
         for (Object o : c) {
             remove(o);
         }
@@ -195,8 +196,14 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
+    public boolean replaceAll(LinearStructure<E> c, E replacement) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public boolean retainAll(Structure c) {
+    public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < capacity; i++) {
             if (!((IndexBased<E>) (c)).contains(get(i))) {
                 remove(i);
@@ -232,7 +239,7 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {}.getClass().getEnclosingMethod()), this.getClass().toString());
     }
 

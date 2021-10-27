@@ -2,10 +2,16 @@ package main.linear;
 
 import main.*;
 import main.util.*;
+import main.util.Cloneable;
 import java.util.*;
 import java.util.function.*;
 
+/**
+ * A list of elements of type E.
+ * @param <E> the type of the elements in this list
+ */
 public class List<E> extends LinearStructure<E> implements IndexBased<E> {
+    /* The default initial capacity of a list */
     private static final int DEFAULT_CAPACITY = 10;
     transient Object[] elementData;
     private int size;
@@ -15,7 +21,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
         this.elementData = new Object[DEFAULT_CAPACITY];
     }
 
-    public List(Structure c) {
+    public List(LinearStructure<E> c) {
         this();
         addAll(c);
     }
@@ -31,7 +37,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         Object[] a = c.arrayify();
         modCount++;
         int numNew = a.length;
@@ -54,15 +60,12 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
             es[i] = null;
     }
 
-    public Object clone() {
-        List<?> v = (List<?>) super.clone();
-        v.elementData = main.Arrays.copyOf(elementData, size);
-        v.modCount = 0;
-        return v;
+    public List<E> clone() {
+        return new List<>(this);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public int compare(Structure o1, Structure o2) {
         if (o1.getClass() != o2.getClass()) {
             throw new IllegalArgumentException(o1.getClass() + " cannot be compared to " + o2.getClass());
@@ -70,12 +73,10 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
             int o1Size = o1.size();
             int o2Size = o2.size();
 
-            Class<?> o1ParamClass = null;
-            Class<?> o2ParamClass = null;
+            Class<?> o1ParamClass = (o1Size > 0) ? ((List<E>) (o1)).get(0).getClass() : null;
+            Class<?> o2ParamClass = (o2Size > 0) ? ((List<E>) (o2)).get(0).getClass() : null;
 
             if (o1Size != 0 && o2Size != 0) {
-                o1ParamClass = ((List<E>) (o1)).get(0).getClass();
-                o2ParamClass = ((List<E>) (o2)).get(0).getClass();
                 if (o1ParamClass != o2ParamClass) {
                     throw new IllegalArgumentException(o1ParamClass + " cannot be compared to " + o2ParamClass);
                 }
@@ -88,7 +89,11 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
                 try {
                     obj = (Comparator<Object>) o1ParamClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    obj = (Comparator<Object>) ((Structure) (o1)).clone();
+                    if (Utilities.isRelatedTo(o1ParamClass, Cloneable.class)) {
+                        obj = (Comparator<Object>) ((Cloneable) ((List<E>) (o1)).get(0)).clone();
+                    } else {
+                        obj = (Comparator<Object>) ((List<E>) (o1)).get(0);
+                    }
                 }
 
                 int result;
@@ -105,7 +110,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
                 }
                 return Integer.compare(o1Size, o2Size);
             } else if (Utilities.isRelatedTo(o1ParamClass, Comparable.class)) {
-                if(o1Size != 0) {
+                if (o1Size != 0) {
                     if (!(((List<E>) (o1)).get(0) instanceof Comparable)) {
                         String s = ((List<E>) (o1)).get(0).getClass().getName();
                         throw new IllegalArgumentException(s.substring(s.indexOf("class ")) + "'s cannot be compared");
@@ -187,12 +192,17 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean removeAll(Structure c) {
+    public boolean removeAll(LinearStructure<E> c) {
         return batchRemove(c, false, 0, size);
     }
 
     @Override
-    public boolean retainAll(Structure c) {
+    public boolean replaceAll(LinearStructure<E> c, E replacement) {
+        return batchReplace(c, replacement, 0, size);
+    }
+
+    @Override
+    public boolean retainAll(LinearStructure<E> c) {
         return batchRemove(c, true, 0, size);
     }
 
@@ -241,7 +251,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         rangeCheckForAdd(index);
         Object[] a = c.arrayify();
         modCount++;
@@ -314,20 +324,20 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     // helper methods
-    public void trimToSize() {
-        modCount++;
-        if (size < elementData.length) {
-            elementData = (size == 0) ? new Object[0] : main.Arrays.copyOf(elementData, size);
-        }
-    }
+    // private void trimToSize() {
+    //     modCount++;
+    //     if (size < elementData.length) {
+    //         elementData = (size == 0) ? new Object[0] : main.Arrays.copyOf(elementData, size);
+    //     }
+    // }
 
-    public void ensureCapacity(int minCapacity) {
-        if (minCapacity > elementData.length
-                && !(defaultEmpty() && minCapacity <= DEFAULT_CAPACITY)) {
-            modCount++;
-            grow(minCapacity);
-        }
-    }
+    // private void ensureCapacity(int minCapacity) {
+    //     if (minCapacity > elementData.length
+    //             && !(defaultEmpty() && minCapacity <= DEFAULT_CAPACITY)) {
+    //         modCount++;
+    //         grow(minCapacity);
+    //     }
+    // }
 
     private Object[] grow(int minCapacity) {
         int oldCapacity = elementData.length;
@@ -372,8 +382,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
         es[size = newSize] = null;
     }
 
-    @SuppressWarnings("unchecked")
-    boolean batchRemove(Structure c, boolean complement, final int from, final int end) {
+    boolean batchRemove(Structure<E> c, boolean complement, final int from, final int end) {
         Objects.requireNonNull(c);
         final Object[] es = elementData;
         int r;
@@ -389,6 +398,37 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
             for (Object e; r < end; r++)
                 if (((IndexBased<E>) (c)).contains(e = es[r]) == complement)
                     es[w++] = e;
+        } catch (Throwable ex) {
+            // Preserve behavioral compatibility with AbstractCollection,
+            // even if c.contains() throws.
+            System.arraycopy(es, r, es, w, end - r);
+            w += end - r;
+            throw ex;
+        } finally {
+            modCount += end - w;
+            shiftTailOverGap(es, w, end);
+        }
+        return true;
+    }
+
+    @SuppressWarnings("unused")
+    boolean batchReplace(Structure<E> c, E replacement, final int from, final int end) {
+        Objects.requireNonNull(c);
+        // Optimize for initial run of survivors
+        final Object[] es = elementData;
+        int r;
+        for (r = from;; r++) {
+            if (r == end)
+                return false;
+            if (((IndexBased<E>) (c)).contains(es[r]))
+                break;
+        }
+        // Replace all elements in [from, end) that match c
+        int w = r++;
+        try {
+            for (Object e; r < end; r++)
+                if (((IndexBased<E>) (c)).contains(e = es[r]))
+                    es[w++] = replacement;
         } catch (Throwable ex) {
             // Preserve behavioral compatibility with AbstractCollection,
             // even if c.contains() throws.
@@ -496,7 +536,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
             Objects.requireNonNull(action);
             final int size = List.this.size;
             int i = cursor;
-            if (i < size) {
+            if (!reverse && i < size) {
                 final Object[] es = elementData;
                 if (i >= es.length)
                     throw new ConcurrentModificationException();
@@ -505,6 +545,17 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
 
                 cursor = i;
                 lastRet = i - 1;
+                checkForComodification();
+            }
+            if (reverse && (i -= 2) > -1) {
+                final Object[] es = elementData;
+                if (i <= -1)
+                    throw new ConcurrentModificationException();
+                for (; i > -1 && modCount == expectedModCount; i--)
+                    action.accept((E) es[i]);
+
+                cursor = i;
+                lastRet = i + 1;
                 checkForComodification();
             }
         }
@@ -528,8 +579,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
                 checkForComodification();
                 if (!hasNext())
                     throw new NoSuchElementException();
-                E nex = (E) elementData[cursor = nextIndex()];
-                return nex;
+                return (E) elementData[cursor = nextIndex()];
             }
         }
 

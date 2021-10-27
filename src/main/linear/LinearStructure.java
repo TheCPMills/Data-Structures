@@ -6,14 +6,12 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-public abstract class LinearStructure<E> implements Structure {
-
+public abstract class LinearStructure<E> implements Structure<E> {
     public abstract boolean add(E e);
 
-    public abstract boolean addAll(Structure c);
+    public abstract boolean addAll(LinearStructure<E> c);
 
-    @SuppressWarnings("unchecked")
-    public boolean addIf(Predicate<? super E> filter, Structure c) {
+    public boolean addIf(Predicate<? super E> filter, LinearStructure<E> c) {
         Objects.requireNonNull(filter);
         boolean added = false;
         final Iterator<? extends E> each = c.iterator();
@@ -32,19 +30,12 @@ public abstract class LinearStructure<E> implements Structure {
         return toArray();
     }
 
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError(e);
-        }
-    }
+    public abstract LinearStructure<E> clone();
 
     // public abstract boolean contains(Object o);
 
     @SuppressWarnings("unchecked")
-    public boolean containsAll(Structure c) {
+    public boolean containsAll(LinearStructure<E> c) {
         for(Object o : c) {
             if(!((IndexBased<E>) (this)).contains(o)) {
                 return false;
@@ -54,7 +45,7 @@ public abstract class LinearStructure<E> implements Structure {
     }
 
     @SuppressWarnings("unchecked")
-    public Structure getAll(Structure c) {
+    public Structure<E> getAll(LinearStructure<E> c) {
         LinearStructure<E> retrieved;
         try {
             retrieved = (LinearStructure<E>) getClass().getDeclaredConstructor().newInstance();
@@ -71,7 +62,7 @@ public abstract class LinearStructure<E> implements Structure {
     }
 
     @SuppressWarnings("unchecked")
-    public Structure getIf(Predicate<? super E> filter) {
+    public LinearStructure<E> getIf(Predicate<? super E> filter) {
         Objects.requireNonNull(filter);
         LinearStructure<E> retrieved;
         try {
@@ -107,9 +98,8 @@ public abstract class LinearStructure<E> implements Structure {
 
     public abstract boolean remove(Object o);
 
-    public abstract boolean removeAll(Structure c);
+    public abstract boolean removeAll(LinearStructure<E> c);
 
-    @SuppressWarnings("unchecked")
     public boolean removeIf(Predicate<? super E> filter) {
         Objects.requireNonNull(filter);
         boolean removed = false;
@@ -123,13 +113,36 @@ public abstract class LinearStructure<E> implements Structure {
         return removed;
     }
 
-    public abstract boolean retainAll(Structure c);
-    
-    // public abstract boolean setAll(Structure c, E replacement);
+    public abstract boolean retainAll(LinearStructure<E> c);
 
-    // public abstract boolean setIf(Predicate<? super E> filter, E replacement);
+    public boolean retainIf(Predicate<? super E> filter) {
+        Objects.requireNonNull(filter);
+        boolean removed = false;
+        final Iterator<E> each = iterator();
+        while (each.hasNext()) {
+            if (!filter.test(each.next())) {
+                each.remove();
+                removed = true;
+            }
+        }
+        return removed;
+    }
     
+    public abstract boolean replaceAll(LinearStructure<E> c, E replacement);
+
     @SuppressWarnings("unchecked")
+    public boolean replaceIf(Predicate<? super E> filter, E replacement) {
+        Objects.requireNonNull(filter);
+        boolean replaced = false;
+        for (int i = 0; i < size(); i++) {
+            if (filter.test(((IndexBased<E>) (this)).get(i))) {
+                ((IndexBased<E>) (this)).set(i, replacement);
+                replaced = true;
+            }
+        }
+        return replaced;
+    }
+    
     public Stream<E> stream() {
         return StreamSupport.stream(spliterator(), false);
     }

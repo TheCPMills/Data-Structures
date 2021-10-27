@@ -2,6 +2,8 @@ package main.linear;
 
 import main.*;
 import main.util.*;
+import main.util.Cloneable;
+
 import java.util.*;
 import java.util.function.*;
 
@@ -12,9 +14,10 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
     protected transient int modCount = 0;
 
     public SinglyLinkedList() {
+        super();
     }
 
-    public SinglyLinkedList(Structure c) {
+    public SinglyLinkedList(LinearStructure<E> c) {
         this();
         addAll(c);
     }
@@ -26,7 +29,7 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
     }
 
     @Override
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         return addAll(size, c);
     }
 
@@ -42,21 +45,12 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
     }
 
     @Override
-    public Object clone() {
-        SinglyLinkedList<E> clone = superClone();
-
-        clone.head = clone.tail = null;
-        clone.size = 0;
-        clone.modCount = 0;
-
-        for (Node<E> x = head; x != null; x = x.getNext())
-            clone.add(x.getItem());
-
-        return clone;
+    public SinglyLinkedList<E> clone() {
+        return new SinglyLinkedList<>(this);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public int compare(Structure o1, Structure o2) {
         if (o1.getClass() != o2.getClass()) {
             throw new IllegalArgumentException(o1.getClass() + " cannot be compared to " + o2.getClass());
@@ -64,12 +58,10 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
             int o1Size = o1.size();
             int o2Size = o2.size();
 
-            Class<?> o1ParamClass = null;
-            Class<?> o2ParamClass = null;
+            Class<?> o1ParamClass = (o1Size > 0) ? ((SinglyLinkedList<E>) (o1)).get(0).getClass() : null;
+            Class<?> o2ParamClass = (o2Size > 0) ? ((SinglyLinkedList<E>) (o2)).get(0).getClass() : null;
 
             if (o1Size != 0 && o2Size != 0) {
-                o1ParamClass = ((SinglyLinkedList<E>) (o1)).get(0).getClass();
-                o2ParamClass = ((SinglyLinkedList<E>) (o2)).get(0).getClass();
                 if (o1ParamClass != o2ParamClass) {
                     throw new IllegalArgumentException(o1ParamClass + " cannot be compared to " + o2ParamClass);
                 }
@@ -82,7 +74,11 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
                 try {
                     obj = (Comparator<Object>) o1ParamClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    obj = (Comparator<Object>) ((Structure) (o1)).clone();
+                    if (Utilities.isRelatedTo(o1ParamClass, Cloneable.class)) {
+                        obj = (Comparator<Object>) ((Cloneable) ((SinglyLinkedList<E>) (o1)).get(0)).clone();
+                    } else {
+                        obj = (Comparator<Object>) ((SinglyLinkedList<E>) (o1)).get(0);
+                    }
                 }
 
                 int result;
@@ -180,7 +176,7 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
     }
 
     @Override
-    public boolean removeAll(Structure c) {
+    public boolean removeAll(LinearStructure<E> c) {
         for (Object o : c) {
             remove(o);
         }
@@ -188,8 +184,14 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
     }
 
     @Override
+    public boolean replaceAll(LinearStructure<E> c, E replacement) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public boolean retainAll(Structure c) {
+    public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < size; i++) {
             if (!((IndexBased<E>) (c)).contains(get(i))) {
                 remove(i);
@@ -241,7 +243,7 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
 
     @Override
     @SuppressWarnings("unchecked")
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         checkPositionIndex(index);
 
         Object[] a = c.arrayify();
@@ -421,11 +423,6 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
         tail = node(size - 1);
         modCount++;
         return element;
-    }
-
-    @SuppressWarnings("unchecked")
-    private SinglyLinkedList<E> superClone() {
-        return (SinglyLinkedList<E>) super.clone();
     }
 
     private static class Node<E> {

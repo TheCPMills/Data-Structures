@@ -1,14 +1,17 @@
 package main.linear;
 
-import main.*;
-
 public class Queue<E> extends SinglyLinkedList<E> {
     public Queue() {
         super();
     }
 
-    public Queue(Structure c) {
+    public Queue(LinearStructure<E> c) {
         super(c);
+    }
+
+    @Override
+    public Queue<E> clone() {
+        return new Queue<>(this);
     }
 
     @Override
@@ -33,7 +36,7 @@ public class Queue<E> extends SinglyLinkedList<E> {
         return add(e);
     }
 
-    public boolean offerAll(Structure c) {
+    public boolean offerAll(LinearStructure<E> c) {
         return addAll(c);
     }
 

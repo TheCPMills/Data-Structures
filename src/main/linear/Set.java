@@ -7,7 +7,7 @@ public class Set<E> extends List<E> {
         super();
     }
 
-    public Set(Structure c) {
+    public Set(LinearStructure<E> c) {
         super(c);
     }
     
@@ -20,8 +20,7 @@ public class Set<E> extends List<E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         boolean allAdded = true;
         for (E e : (Iterable<E>) c) {
             if (!checkForDuplicate(e)) {
@@ -43,7 +42,7 @@ public class Set<E> extends List<E> {
             return false;
         }
         Set<E> s1 = (Set<E>) clone();
-        Set<E> s2 = (Set<E>) ((Structure) (o)).clone();
+        Set<E> s2 = (Set<E>) ((Structure<E>) (o)).clone();
         while (s1.size() != 0) {
             E elm = s1.remove(0);
             s2.remove(elm);
@@ -65,8 +64,7 @@ public class Set<E> extends List<E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         boolean allAdded = true;
         for(E e : (Iterable<E>) c) {
             if (!checkForDuplicate(e)) {

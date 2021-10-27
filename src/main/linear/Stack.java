@@ -7,10 +7,15 @@ public class Stack<E> extends SinglyLinkedList<E> {
         super();
     }
 
-    public Stack(Structure c) {
+    public Stack(LinearStructure<E> c) {
         super(c);
     }
     
+    @Override
+    public Stack<E> clone() {
+        return new Stack<E>(this);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
@@ -41,7 +46,7 @@ public class Stack<E> extends SinglyLinkedList<E> {
         return add(e);
     }
 
-    public boolean pushAll(Structure c) {
+    public boolean pushAll(LinearStructure<E> c) {
         return addAll(c);
     }
 
@@ -53,13 +58,13 @@ public class Stack<E> extends SinglyLinkedList<E> {
     }
 
     @Override
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         return addAll(0, c);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         checkPositionIndex(index);
 
         Object[] a = c.arrayify();

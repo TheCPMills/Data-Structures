@@ -27,7 +27,7 @@ public class CircularArray<E> extends LinearStructure<E> implements IndexBased<E
         }
     }
 
-    public CircularArray(Structure c) {
+    public CircularArray(LinearStructure<E> c) {
         this(c.size());
         addAll(c);
     }
@@ -44,8 +44,7 @@ public class CircularArray<E> extends LinearStructure<E> implements IndexBased<E
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         if (capacity - size < c.size()) {
             return false;
         }
@@ -63,13 +62,12 @@ public class CircularArray<E> extends LinearStructure<E> implements IndexBased<E
     }
 
     @Override
-    public Object clone() {
-        CircularArray<?> v = (CircularArray<?>) super.clone();
-        v.elementData = main.Arrays.copyOf(elementData, size);
-        return v;
+    public CircularArray<E> clone() {
+        return new CircularArray<>(this);
     }
 
     @Override
+    @SuppressWarnings({"rawtypes"})
     public int compare(Structure o1, Structure o2) {
         // TODO Auto-generated method stub
         return 0;
@@ -113,7 +111,7 @@ public class CircularArray<E> extends LinearStructure<E> implements IndexBased<E
     }
 
     @Override
-    public boolean removeAll(Structure c) {
+    public boolean removeAll(LinearStructure<E> c) {
         for (Object o : c) {
             remove(o);
         }
@@ -121,8 +119,14 @@ public class CircularArray<E> extends LinearStructure<E> implements IndexBased<E
     }
 
     @Override
+    public boolean replaceAll(LinearStructure<E> c, E replacement) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public boolean retainAll(Structure c) {
+    public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < capacity; i++) {
             if (!((IndexBased<E>) (c)).contains(get(i))) {
                 remove(i);
@@ -157,7 +161,7 @@ public class CircularArray<E> extends LinearStructure<E> implements IndexBased<E
     }
 
     @Override
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {}.getClass().getEnclosingMethod()), this.getClass().toString());
     }
 

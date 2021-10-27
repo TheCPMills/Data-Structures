@@ -43,7 +43,7 @@ public class Utilities {
         return sup.isAssignableFrom(sub);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static int compare(Object o1, Object o2) {
         if (o1.getClass() != o2.getClass()) {
             throw new IllegalArgumentException(o1.getClass() + " cannot be compared to " + o2.getClass());

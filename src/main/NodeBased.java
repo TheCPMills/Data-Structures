@@ -1,6 +1,6 @@
 package main;
 
-public interface NodeBased<E> extends Structure {
+public interface NodeBased<E> extends Structure<E> {
     // only for trees that have an unknown amount of children
     // public void add(Node node, E element);
 
@@ -36,7 +36,7 @@ public interface NodeBased<E> extends Structure {
 
     public E set(Node node, E element);
 
-    public Structure splice(Node fromNode, Node toNode);
+    public Structure<E> splice(Node fromNode, Node toNode);
 
     public boolean swap(Node element, Node swappedElement);
 

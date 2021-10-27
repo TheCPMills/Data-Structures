@@ -1366,7 +1366,7 @@ class DynamicArray<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {}.getClass().getEnclosingMethod()), this.getClass().toString());
     }
 
@@ -1376,11 +1376,12 @@ class DynamicArray<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public Object clone() {
+    public DynamicArray<E> clone() {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {}.getClass().getEnclosingMethod()), this.getClass().toString());
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public int compare(Structure o1, Structure o2) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {}.getClass().getEnclosingMethod()), this.getClass().toString());
     }
@@ -1408,13 +1409,19 @@ class DynamicArray<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean removeAll(Structure c) {
+    public boolean removeAll(LinearStructure<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {
         }.getClass().getEnclosingMethod()), this.getClass().toString());
     }
 
     @Override
-    public boolean retainAll(Structure c) {
+    public boolean replaceAll(LinearStructure<E> c, E e) {
+        throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {
+        }.getClass().getEnclosingMethod()), this.getClass().toString());
+    }
+
+    @Override
+    public boolean retainAll(LinearStructure<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {
         }.getClass().getEnclosingMethod()), this.getClass().toString());
     }
@@ -1437,7 +1444,7 @@ class DynamicArray<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {
         }.getClass().getEnclosingMethod()), this.getClass().toString());
     }

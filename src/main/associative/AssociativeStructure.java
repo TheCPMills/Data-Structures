@@ -1,26 +1,30 @@
 package main.associative;
 
-import java.util.*;
-
 import main.*;
-import main.linear.*;
+import main.linear.Set;
+import main.linear.List;
+import main.linear.LinkedList;
 
-public abstract class AssociativeStructure<K, V> implements Structure {
+public abstract class AssociativeStructure<K, V> implements Structure<Entry<K, V>> {
+    static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
+    static final int MAXIMUM_CAPACITY = 1 << 30;
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+    
     public Object[] arrayify() {
         return this.values().toArray();
     }
     
-    public abstract Object clone();
+    public abstract AssociativeStructure<K, V> clone();
     
-    public abstract Enumeration<Entry<K, V>> entries();
+    public abstract LinkedList<Entry<K, V>> entries();
 
-    public abstract LinearStructure<K> keys();
+    public abstract Set<K> keys();
 
-    public abstract LinearStructure<V> values();
+    public abstract List<V> values();
 
     public abstract boolean put(K key, V value);
 
-    public abstract boolean putAll();
+    public abstract boolean putAll(AssociativeStructure<K, V> c);
 
     public abstract V get(K key);
 
@@ -32,35 +36,7 @@ public abstract class AssociativeStructure<K, V> implements Structure {
 
     public abstract V remove(K key);
 
-    public abstract LinearStructure<K> keysOf(V value);
-}
+    public abstract Set<K> keysOf(V value);
 
-class Entry<K, V> {
-    private final K key;
-    private V value;
-
-    public Entry(K key, V value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public K getKey() {
-        return key;
-    }
-
-    public V getValue() {
-        return value;
-    }
-
-    public int hashCode() {
-        return Objects.hashCode(key) ^ Objects.hashCode(value);
-    }
-
-    public void setValue(V newValue) {
-        value = newValue;
-    }
-
-    public String toString() {
-        return key + ": " + value;
-    }
+    public abstract float loadFactor();
 }

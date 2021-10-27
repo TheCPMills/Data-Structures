@@ -4,12 +4,12 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.*;
 
-public interface IndexBased<E> extends Structure {
+public interface IndexBased<E> extends Structure<E> {
     public boolean add(E e);
 
     public void add(int index, E element);
 
-    public boolean addAll(int index, Structure c);
+    public boolean addAll(int index, Structure<E> c);
 
     public default boolean contains(Object o) {
         return indexOf(o) >= 0;
@@ -85,7 +85,7 @@ public interface IndexBased<E> extends Structure {
     
     public E set(int index, E element);
 
-    public default boolean setAll(Structure c, E replacement) {
+    public default boolean setAll(Structure<E> c, E replacement) {
         for(Object o : c) {
             if(contains(o)) {
                 set(indexOf(o), replacement);
@@ -94,7 +94,6 @@ public interface IndexBased<E> extends Structure {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     public default boolean setIf(Predicate<? super E> filter, E replacement) {
         Objects.requireNonNull(filter);
         boolean replaced = false;

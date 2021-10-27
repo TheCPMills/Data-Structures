@@ -1,9 +1,10 @@
 package main;
 
 import java.util.*;
+import main.util.Cloneable;
 
 @SuppressWarnings("rawtypes")
-public interface Structure extends Iterable, Comparator<Structure>, Cloneable {
+public interface Structure<E> extends Iterable<E>, Comparator<Structure>, Cloneable<Structure> {
     public Object[] arrayify();
     //     if (this instanceof LinearStructure) {
     //         return ((LinearStructure<E>) (this)).toArray();
@@ -19,7 +20,7 @@ public interface Structure extends Iterable, Comparator<Structure>, Cloneable {
 
     public void clear();
 
-    public Object clone();
+    public Structure<E> clone();
 
     public int compare(Structure o1, Structure o2);
 
@@ -29,9 +30,9 @@ public interface Structure extends Iterable, Comparator<Structure>, Cloneable {
     
     public boolean isEmpty();
     
-    public Iterator iterator();
+    public Iterator<E> iterator();
 
-    public Iterator reverseIterator();
+    public Iterator<E> reverseIterator();
    
     public int size();
   

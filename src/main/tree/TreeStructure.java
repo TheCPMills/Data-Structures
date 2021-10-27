@@ -3,7 +3,7 @@ package main.tree;
 import main.*;
 import main.linear.*;
 
-public interface TreeStructure<E> extends Structure {
+public interface TreeStructure<E> extends Structure<E> {
     public TreeStructure<E> root();
 
     public TreeStructure<E> parents();

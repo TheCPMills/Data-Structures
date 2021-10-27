@@ -2,6 +2,8 @@ package main.linear;
 
 import main.*;
 import main.util.*;
+import main.util.Cloneable;
+
 import java.util.*;
 import java.util.function.*;
 
@@ -14,7 +16,7 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     public CircularList() {
     }
 
-    public CircularList(Structure c) {
+    public CircularList(LinearStructure<E> c) {
         this();
         addAll(c);
     }
@@ -26,7 +28,7 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     }
 
     @Override
-    public boolean addAll(Structure c) {
+    public boolean addAll(LinearStructure<E> c) {
         return addAll(size, c);
     }
 
@@ -43,21 +45,12 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     }
 
     @Override
-    public Object clone() {
-        CircularList<E> clone = superClone();
-
-        clone.head = clone.tail = null;
-        clone.size = 0;
-        clone.modCount = 0;
-
-        for (CircularNode<E> x = head; x != null; x = x.getNext())
-            clone.add(x.getItem());
-
-        return clone;
+    public CircularList<E> clone() {
+        return new CircularList<E>(this);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public int compare(Structure o1, Structure o2) {
         if (o1.getClass() != o2.getClass()) {
             throw new IllegalArgumentException(o1.getClass() + " cannot be compared to " + o2.getClass());
@@ -65,12 +58,10 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
             int o1Size = o1.size();
             int o2Size = o2.size();
 
-            Class<?> o1ParamClass = null;
-            Class<?> o2ParamClass = null;
+            Class<?> o1ParamClass = (o1Size > 0) ? ((CircularList<E>) (o1)).get(0).getClass() : null;
+            Class<?> o2ParamClass = (o2Size > 0) ? ((CircularList<E>) (o2)).get(0).getClass() : null;
 
             if (o1Size != 0 && o2Size != 0) {
-                o1ParamClass = ((CircularList<E>) (o1)).get(0).getClass();
-                o2ParamClass = ((CircularList<E>) (o2)).get(0).getClass();
                 if (o1ParamClass != o2ParamClass) {
                     throw new IllegalArgumentException(o1ParamClass + " cannot be compared to " + o2ParamClass);
                 }
@@ -83,7 +74,11 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
                 try {
                     obj = (Comparator<Object>) o1ParamClass.getDeclaredConstructor().newInstance();
                 } catch (Exception e) {
-                    obj = (Comparator<Object>) ((Structure) (o1)).clone();
+                    if (Utilities.isRelatedTo(o1ParamClass, Cloneable.class)) {
+                        obj = (Comparator<Object>) ((Cloneable) ((CircularList<E>) (o1)).get(0)).clone();
+                    } else {
+                        obj = (Comparator<Object>) ((CircularList<E>) (o1)).get(0);
+                    }
                 }
 
                 int result;
@@ -181,7 +176,7 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     }
 
     @Override
-    public boolean removeAll(Structure c) {
+    public boolean removeAll(LinearStructure<E> c) {
         for (Object o : c) {
             remove(o);
         }
@@ -189,8 +184,14 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     }
 
     @Override
+    public boolean replaceAll(LinearStructure<E> c, E replacement) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public boolean retainAll(Structure c) {
+    public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < size; i++) {
             if (!((IndexBased<E>) (c)).contains(get(i))) {
                 remove(i);
@@ -242,7 +243,7 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     }
 
     @Override
-    public boolean addAll(int index, Structure c) {
+    public boolean addAll(int index, Structure<E> c) {
         index = index % (size + 1);
         checkPositionIndex(index);
 
@@ -481,11 +482,6 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
         size--;
         modCount++;
         return element;
-    }
-
-    @SuppressWarnings("unchecked")
-    private CircularList<E> superClone() {
-        return (CircularList<E>) super.clone();
     }
 
     private static class CircularNode<E> {

@@ -1,13 +1,11 @@
 package main.linear;
 
-import main.*;
-
 public class DoubleEndedList<E> extends LinkedList<E> {
     public DoubleEndedList() {
         super();
     }
 
-    public DoubleEndedList(Structure c) {
+    public DoubleEndedList(LinearStructure<E> c) {
         super(c);
     }
     
@@ -18,6 +16,11 @@ public class DoubleEndedList<E> extends LinkedList<E> {
 
     public boolean addLast(E e) {
         return add(e);
+    }
+
+    @Override
+    public DoubleEndedList<E> clone() {
+        return new DoubleEndedList<>(this);
     }
 
     @Override

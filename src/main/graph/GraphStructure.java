@@ -8,19 +8,19 @@ public interface GraphStructure<E> extends NodeBased<E> {
 
     public boolean adjacent(Node node);
 
-    public Structure edges();
+    public Structure<E> edges();
 
     public boolean isDirected();
 
     public boolean isWeighted();
 
-    public Structure neighbors();
+    public Structure<E> neighbors();
 
-    public Structure path(Node start, Node destination);
+    public Structure<E> path(Node start, Node destination);
 
     public E removeEdge(Node node, Node adjacentNode);
 
-    public AssociativeStructure toMap();
+    public HashMap<E, Structure<E>> toMap();
     
-    public Structure vertices();
+    public Structure<E> vertices();
 }

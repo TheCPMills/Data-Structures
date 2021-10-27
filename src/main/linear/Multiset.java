@@ -3,6 +3,14 @@ package main.linear;
 import main.*;
 
 public class Multiset<E> extends List<E> {
+    public Multiset() {
+        super();
+    }
+
+    public Multiset(LinearStructure<E> c) {
+        super(c);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
@@ -13,7 +21,7 @@ public class Multiset<E> extends List<E> {
             return false;
         }
         Multiset<E> s1 = (Multiset<E>) clone();
-        Multiset<E> s2 = (Multiset<E>) ((Structure) (o)).clone();
+        Multiset<E> s2 = (Multiset<E>) ((Structure<E>) (o)).clone();
         while (s1.size() != 0) {
             E elm = s1.remove(0);
             s2.remove(elm);
