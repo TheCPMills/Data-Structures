@@ -10,7 +10,7 @@ import java.util.function.*;
  * A list of elements of type E.
  * @param <E> the type of the elements in this list
  */
-public class List<E> extends LinearStructure<E> implements IndexBased<E> {
+public class List<E> extends LinearStructure<E> {
     /* The default initial capacity of a list */
     private static final int DEFAULT_CAPACITY = 10;
     transient Object[] elementData;
@@ -238,7 +238,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public void add(int index, E element) {
+    public boolean add(int index, E element) {
         rangeCheckForAdd(index);
         modCount++;
         final int s;
@@ -248,10 +248,11 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
         System.arraycopy(elementData, index, elementData, index + 1, s - index);
         elementData[index] = element;
         size = s + 1;
+        return true;
     }
 
     @Override
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         rangeCheckForAdd(index);
         Object[] a = c.arrayify();
         modCount++;
@@ -382,6 +383,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
         es[size = newSize] = null;
     }
 
+    @SuppressWarnings("unchecked")
     boolean batchRemove(Structure<E> c, boolean complement, final int from, final int end) {
         Objects.requireNonNull(c);
         final Object[] es = elementData;
@@ -390,13 +392,13 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
         for (r = from;; r++) {
             if (r == end)
                 return false;
-            if (((IndexBased<E>) (c)).contains(es[r]) != complement)
+            if (((IndexBased<E>) (c)).contains((E) es[r]) != complement)
                 break;
         }
         int w = r++;
         try {
-            for (Object e; r < end; r++)
-                if (((IndexBased<E>) (c)).contains(e = es[r]) == complement)
+            for (E e; r < end; r++)
+                if (((IndexBased<E>) (c)).contains(e = (E) es[r]) == complement)
                     es[w++] = e;
         } catch (Throwable ex) {
             // Preserve behavioral compatibility with AbstractCollection,
@@ -411,7 +413,7 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
         return true;
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unchecked", "unused"})
     boolean batchReplace(Structure<E> c, E replacement, final int from, final int end) {
         Objects.requireNonNull(c);
         // Optimize for initial run of survivors
@@ -420,14 +422,14 @@ public class List<E> extends LinearStructure<E> implements IndexBased<E> {
         for (r = from;; r++) {
             if (r == end)
                 return false;
-            if (((IndexBased<E>) (c)).contains(es[r]))
+            if (((IndexBased<E>) (c)).contains((E) es[r]))
                 break;
         }
         // Replace all elements in [from, end) that match c
         int w = r++;
         try {
-            for (Object e; r < end; r++)
-                if (((IndexBased<E>) (c)).contains(e = es[r]))
+            for (E e; r < end; r++)
+                if (((IndexBased<E>) (c)).contains(e = (E) es[r]))
                     es[w++] = replacement;
         } catch (Throwable ex) {
             // Preserve behavioral compatibility with AbstractCollection,

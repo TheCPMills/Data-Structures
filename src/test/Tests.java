@@ -81,4 +81,9 @@ public class Tests {
         lI.retainIf(x -> x < 10); // {1, 2, 3, 4, 5, 6, 7, 8, 9}
         Assertions.assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9), lI);
     }
+
+    public static void main(String[] args) {
+        Tests t = new Tests();
+        t.test();
+    }
 }

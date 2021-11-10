@@ -6,8 +6,16 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
-public abstract class LinearStructure<E> implements Structure<E> {
-    public abstract boolean add(E e);
+public abstract class LinearStructure<E> implements IndexBased<E> {
+    /***************************/
+    /* MODIFICATION OPERATIONS */
+    /***************************/
+
+    public abstract boolean remove(E element);
+    
+    /*******************/
+    /* BULK OPERATIONS */
+    /*******************/
 
     public abstract boolean addAll(LinearStructure<E> c);
 
@@ -32,12 +40,9 @@ public abstract class LinearStructure<E> implements Structure<E> {
 
     public abstract LinearStructure<E> clone();
 
-    // public abstract boolean contains(Object o);
-
-    @SuppressWarnings("unchecked")
     public boolean containsAll(LinearStructure<E> c) {
-        for(Object o : c) {
-            if(!((IndexBased<E>) (this)).contains(o)) {
+        for(E e : c) {
+            if(!contains(e)) {
                 return false;
             }
         }
@@ -49,9 +54,9 @@ public abstract class LinearStructure<E> implements Structure<E> {
         LinearStructure<E> retrieved;
         try {
             retrieved = (LinearStructure<E>) getClass().getDeclaredConstructor().newInstance();
-            for (Object o : c) {
-                if (((IndexBased<E>) (this)).contains(o)) {
-                    retrieved.add((E) o);
+            for (E e : c) {
+                if (((IndexBased<E>) (this)).contains(e)) {
+                    retrieved.add((E) e);
                 }
             }
             return retrieved;
@@ -85,18 +90,9 @@ public abstract class LinearStructure<E> implements Structure<E> {
         return null;
     }
 
-    @Override
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
     public CircularList<E> loop() {
         return new CircularList<>(this);
     }
-
-    // public abstract int occurrences(Object o);
-
-    public abstract boolean remove(Object o);
 
     public abstract boolean removeAll(LinearStructure<E> c);
 
@@ -130,12 +126,11 @@ public abstract class LinearStructure<E> implements Structure<E> {
     
     public abstract boolean replaceAll(LinearStructure<E> c, E replacement);
 
-    @SuppressWarnings("unchecked")
     public boolean replaceIf(Predicate<? super E> filter, E replacement) {
         Objects.requireNonNull(filter);
         boolean replaced = false;
         for (int i = 0; i < size(); i++) {
-            if (filter.test(((IndexBased<E>) (this)).get(i))) {
+            if (filter.test(get(i))) {
                 ((IndexBased<E>) (this)).set(i, replacement);
                 replaced = true;
             }
@@ -149,5 +144,5 @@ public abstract class LinearStructure<E> implements Structure<E> {
 
     public abstract Object[] toArray();
 
-    public abstract <T> T[]toArray(T[] a);
+    public abstract <T> T[] toArray(T[] a);
 }

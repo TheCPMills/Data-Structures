@@ -7,7 +7,7 @@ import main.util.Cloneable;
 import java.util.*;
 import java.util.function.*;
 
-public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
+public class Array<E> extends LinearStructure<E> {
 
     protected final int capacity;
     protected int size;
@@ -202,10 +202,9 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < capacity; i++) {
-            if (!((IndexBased<E>) (c)).contains(get(i))) {
+            if (!contains(get(i))) {
                 remove(i);
                 i--;
             }
@@ -233,13 +232,13 @@ public class Array<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public void add(int index, E element) {
+    public boolean add(int index, E element) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {}.getClass().getEnclosingMethod()), this.getClass().toString());
 
     }
 
     @Override
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {}.getClass().getEnclosingMethod()), this.getClass().toString());
     }
 

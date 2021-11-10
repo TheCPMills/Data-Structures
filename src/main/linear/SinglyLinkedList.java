@@ -7,7 +7,7 @@ import main.util.Cloneable;
 import java.util.*;
 import java.util.function.*;
 
-public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBased<E> {
+public class SinglyLinkedList<E> extends LinearStructure<E> {
     transient int size = 0;
     transient Node<E> head;
     transient Node<E> tail;
@@ -190,10 +190,9 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < size; i++) {
-            if (!((IndexBased<E>) (c)).contains(get(i))) {
+            if (!contains(get(i))) {
                 remove(i);
                 i--;
             }
@@ -233,17 +232,17 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
     }
 
     @Override
-    public void add(int index, E element) {
+    public boolean add(int index, E element) {
         checkPositionIndex(index);
         if (index == size)
-            linkToTail(element);
+            return linkToTail(element);
         else
-            linkBetween(element, (index == 0) ? null : node(index - 1));
+            return linkBetween(element, (index == 0) ? null : node(index - 1));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         checkPositionIndex(index);
 
         Object[] a = c.arrayify();
@@ -374,7 +373,7 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
         return x;
     }
 
-    void linkToTail(E e) {
+    boolean linkToTail(E e) {
         final Node<E> newNode = new Node<>(e, null);
 
         if (head == null)
@@ -384,9 +383,10 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
         size++;
         tail = newNode;
         modCount++;
+        return true;
     }
 
-    void linkBetween(E e, Node<E> pred) {
+    boolean linkBetween(E e, Node<E> pred) {
         final Node<E> newNode;
         if (pred == null) {
             newNode = new Node<>(e, head);
@@ -398,6 +398,7 @@ public class SinglyLinkedList<E> extends LinearStructure<E> implements IndexBase
         size++;
         tail = node(size - 1);
         modCount++;
+        return true;
     }
 
     E unlink(Node<E> x) {

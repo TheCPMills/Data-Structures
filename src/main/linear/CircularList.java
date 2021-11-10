@@ -7,7 +7,7 @@ import main.util.Cloneable;
 import java.util.*;
 import java.util.function.*;
 
-public class CircularList<E> extends LinearStructure<E> implements IndexBased<E> {
+public class CircularList<E> extends LinearStructure<E> {
     transient int size = 0;
     transient CircularNode<E> head;
     transient CircularNode<E> tail;
@@ -190,10 +190,9 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < size; i++) {
-            if (!((IndexBased<E>) (c)).contains(get(i))) {
+            if (!contains(get(i))) {
                 remove(i);
                 i--;
             }
@@ -233,17 +232,17 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
     }
 
     @Override
-    public void add(int index, E element) {
+    public boolean add(int index, E element) {
         index = index % (size + 1);
         checkPositionIndex(index);
         if (index == size)
-            linkToTail(element);
+            return linkToTail(element);
         else
-            linkBetween(element, node(index));
+            return linkBetween(element, node(index));
     }
 
     @Override
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         index = index % (size + 1);
         checkPositionIndex(index);
 
@@ -415,7 +414,7 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
         }
     }
 
-    void linkToTail(E e) {
+    boolean linkToTail(E e) {
         final CircularNode<E> l = tail;
         final CircularNode<E> f = head;
         final CircularNode<E> newNode = new CircularNode<>(l, e, f);
@@ -434,9 +433,10 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
         head.setPrevious(tail);
         size++;
         modCount++;
+        return true;
     }
 
-    void linkBetween(E e, CircularNode<E> succ) {
+    boolean linkBetween(E e, CircularNode<E> succ) {
         final CircularNode<E> pred = succ.getPrevious();
         final CircularNode<E> newNode = new CircularNode<>(pred, e, succ);
         succ.setPrevious(newNode);
@@ -446,6 +446,7 @@ public class CircularList<E> extends LinearStructure<E> implements IndexBased<E>
             pred.setNext(newNode);
         size++;
         modCount++;
+        return true;
     }
 
     E unlink(CircularNode<E> x) {

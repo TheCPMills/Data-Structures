@@ -8,19 +8,19 @@ public interface NodeBased<E> extends Structure<E> {
 
     public Node getNodeByIndex(int index);
 
-    public Node lastNodeOf(Object o);
+    public Node lastNodeOf(E element);
 
-    public Node nodeOf(Object o);
+    public Node nodeOf(E element);
 
-    public default Node nodeOf(Object o, int occurrence) {
+    public default Node nodeOf(E element, int occurrence) {
         IndexBased<E> indexBased = toIndexBased();
-        int index = indexBased.indexOf(o, occurrence);
+        int index = indexBased.indexOf(element, occurrence);
         return getNodeByIndex(index);
     }
 
-    public default Node[] nodesOf(Object o) {
+    public default Node[] nodesOf(E element) {
         IndexBased<E> indexBased = toIndexBased();
-        int[] indices = indexBased.indicesOf(o);
+        int[] indices = indexBased.indicesOf(element);
         Node[] nodes = new Node[indices.length];
         for (int i = 0; i < indices.length; i++) {
             nodes[i] = getNodeByIndex(indices[i]);
@@ -28,8 +28,8 @@ public interface NodeBased<E> extends Structure<E> {
         return nodes;
     }
 
-    public default int occurrences(Object o) {
-        return toIndexBased().occurrences(o);
+    public default int occurrences(E element) {
+        return toIndexBased().occurrences(element);
     }
 
     public E remove(Node node);

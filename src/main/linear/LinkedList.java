@@ -7,7 +7,7 @@ import main.util.Cloneable;
 import java.util.*;
 import java.util.function.*;
 
-public class LinkedList<E> extends LinearStructure<E> implements IndexBased<E> {
+public class LinkedList<E> extends LinearStructure<E> {
     transient int size = 0;
     transient Node<E> head;
     transient Node<E> tail;
@@ -191,10 +191,9 @@ public class LinkedList<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean retainAll(LinearStructure<E> c) {
         for (int i = 0; i < size; i++) {
-            if (!((IndexBased<E>) (c)).contains(get(i))) {
+            if (!contains(get(i))) {
                 remove(i);
                 i--;
             }
@@ -234,16 +233,16 @@ public class LinkedList<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public void add(int index, E element) {
+    public boolean add(int index, E element) {
         checkPositionIndex(index);
         if (index == size)
-            linkToTail(element);
+            return linkToTail(element);
         else
-            linkBetween(element, node(index));
+            return linkBetween(element, node(index));
     }
 
     @Override
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         checkPositionIndex(index);
 
         Object[] a = c.arrayify();
@@ -404,7 +403,7 @@ public class LinkedList<E> extends LinearStructure<E> implements IndexBased<E> {
         }
     }
 
-    void linkToTail(E e) {
+    boolean linkToTail(E e) {
         final Node<E> l = tail;
         final Node<E> newNode = new Node<>(l, e, null);
         tail = newNode;
@@ -414,9 +413,10 @@ public class LinkedList<E> extends LinearStructure<E> implements IndexBased<E> {
             l.setNext(newNode);
         size++;
         modCount++;
+        return true;
     }
 
-    void linkBetween(E e, Node<E> succ) {
+    boolean linkBetween(E e, Node<E> succ) {
         final Node<E> pred = succ.getPrevious();
         final Node<E> newNode = new Node<>(pred, e, succ);
         succ.setPrevious(newNode);
@@ -426,6 +426,7 @@ public class LinkedList<E> extends LinearStructure<E> implements IndexBased<E> {
             pred.setNext(newNode);
         size++;
         modCount++;
+        return true;
     }
 
     E unlink(Node<E> x) {

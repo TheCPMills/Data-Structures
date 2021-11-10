@@ -1353,7 +1353,7 @@ public class Arrays {
                 Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 }
-class DynamicArray<E> extends LinearStructure<E> implements IndexBased<E> {
+class DynamicArray<E> extends LinearStructure<E> {
     private final E[] a;
 
     DynamicArray(E[] array) {
@@ -1438,13 +1438,13 @@ class DynamicArray<E> extends LinearStructure<E> implements IndexBased<E> {
     }
 
     @Override
-    public void add(int index, E element) {
+    public boolean add(int index, E element) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {
         }.getClass().getEnclosingMethod()), this.getClass().toString());
     }
 
     @Override
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         throw new MethodNotApplicableException(Utilities.getMethodName(new Object() {
         }.getClass().getEnclosingMethod()), this.getClass().toString());
     }

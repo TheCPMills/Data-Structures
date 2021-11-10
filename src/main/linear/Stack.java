@@ -64,7 +64,7 @@ public class Stack<E> extends SinglyLinkedList<E> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         checkPositionIndex(index);
 
         Object[] a = c.arrayify();

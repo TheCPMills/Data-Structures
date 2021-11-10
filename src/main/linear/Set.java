@@ -57,14 +57,15 @@ public class Set<E> extends List<E> {
     }
 
     @Override
-    public void add(int index, E element) {
+    public boolean add(int index, E element) {
         if (!checkForDuplicate(element)) {
-            super.add(index, element);
+            return super.add(index, element);
         }
+        return false;
     }
 
     @Override
-    public boolean addAll(int index, Structure<E> c) {
+    public boolean addAll(int index, IndexBased<E> c) {
         boolean allAdded = true;
         for(E e : (Iterable<E>) c) {
             if (!checkForDuplicate(e)) {
